@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { CurrencyRates, FetchedData } from '$lib/types';
+	import type { CurrencyRates } from '$lib/types';
 	import CurrencyDropdown from './_default/CurrencyDropdown.svelte';
 	import { convertCurrency } from '$lib/utilities.svelte';
+	import { fetchCurrencies } from './api/currencies/apis';
 
 	let isLoadingCurrencies: boolean = $state(false);
 	let currencies: CurrencyRates = $state({});
@@ -15,22 +16,10 @@
 
 	$effect(() => {
 		const fetchData = async () => {
-			try {
-				isLoadingCurrencies = true;
-				const response = await fetch('api/currencies/');
-
-				if (!response.ok) {
-					throw new Error(`Error: ${response.status} ${response.statusText}`);
-				}
-
-				const data: FetchedData = await response.json();
-
-				currencies = data.rates;
-			} catch (error) {
-				console.error('Failed to fetch currencies:', error);
-			} finally {
-				isLoadingCurrencies = false;
-			}
+			isLoadingCurrencies = true;
+			const data = await fetchCurrencies();
+			if (data !== null) currencies = data.rates;
+			isLoadingCurrencies = false;
 		};
 
 		//Fetch Initially

@@ -1,9 +1,11 @@
-import { API_ENDPOINT, API_KEY } from '$env/static/private';
+// import { API_ENDPOINT, API_KEY } from '$env/static/private';
 import type { FetchedData } from '$lib/types';
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 
-// GET method to fetch currencies
-export const GET = async () => {
+const API_ENDPOINT = 'https://api.currencyfreaks.com/v2.0/rates/latest?apikey=';
+const API_KEY = 'd7a39e56e3d243a390472b00802d41dc';
+
+export const fetchCurrencies = async (): Promise<FetchedData | null> => {
 	try {
 		const response = await fetch(`${API_ENDPOINT}${API_KEY}`);
 
@@ -12,9 +14,9 @@ export const GET = async () => {
 		}
 
 		const data: FetchedData = await response.json();
-		return json(data);
+		return data;
 	} catch (err: unknown) {
 		console.error('Failed to fetch currencies:', err);
-		throw error(500, 'Internal Server Error');
+		return null;
 	}
 };
