@@ -1,10 +1,7 @@
 <script lang="ts">
-	import type { CurrencyRates, FetchedData } from '../lib/types';
+	import type { CurrencyRates, FetchedData } from '$lib/types';
 	import CurrencyDropdown from './_default/CurrencyDropdown.svelte';
-	import { convertCurrency } from '../lib/utilities.svelte';
-
-	const endpoint = import.meta.env.VITE_API_ENDPOINT;
-	const apiKey = import.meta.env.VITE_API_KEY;
+	import { convertCurrency } from '$lib/utilities.svelte';
 
 	let isLoadingCurrencies: boolean = $state(false);
 	let currencies: CurrencyRates = $state({});
@@ -17,10 +14,10 @@
 	);
 
 	$effect(() => {
-		const fetchCurrencies = async () => {
+		const fetchData = async () => {
 			try {
 				isLoadingCurrencies = true;
-				const response = await fetch(`${endpoint}${apiKey}`);
+				const response = await fetch('api/currencies/');
 
 				if (!response.ok) {
 					throw new Error(`Error: ${response.status} ${response.statusText}`);
@@ -37,10 +34,10 @@
 		};
 
 		//Fetch Initially
-		fetchCurrencies();
+		fetchData();
 
 		//Fetch every 5 minutes
-		const id = setInterval(fetchCurrencies, 300000, () => fetchCurrencies());
+		const id = setInterval(fetchData, 300000, () => fetchData());
 		return () => clearInterval(id);
 	});
 </script>
